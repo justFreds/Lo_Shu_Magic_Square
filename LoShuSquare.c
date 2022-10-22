@@ -16,8 +16,8 @@
 
     
     //createSquare()
+    //isLoShu()    
     //printSquare()
-    //isLoShu()
 
 
 //FUNCTIONS
