@@ -12,7 +12,8 @@
 #define LO_SHU_NUMBER 15
 
 //PROTOTYPES
-static bool isLoshu(int square[][SQUARE_SIZE]); 
+static bool isLoshu(int square[][SQUARE_SIZE]);
+static void createRandomSquare(void); 
 
 //MAIN
 int main() {
@@ -29,7 +30,7 @@ int main() {
         {4, 5, 6},
         (7, 8, 9)
     };
-    
+    //PASS ARRAYS INTO isLoShu([][]);
     if(isLoshu(LoShuSquare)) {
         printf("Square #1 is a Lo-Shu Magic Square!\n");
     }
@@ -42,12 +43,8 @@ int main() {
     else {
         printf("Square #2 is NOT a Lo-Shu Magic Square!\n");
     }
-
-
-    //TEMP NUMBER ARRAY FROM 1-9 (temp swap for randomizing)?
-
-    //PASS ARRAYS INTO isLoShu([][]);
     //createSquare()
+    createRandomSquare();
     //isLoShu()    
     //printSquare()
 
@@ -100,9 +97,33 @@ static bool isLoshu(int square[][SQUARE_SIZE]) {
     return false;
 }
 
+//FUNCITON createSquare()
+static void createRandomSquare(void) {
 
-    //2)
-        //FUNCITON createSquare()
+    int tempArray[9] = {1,2,3,4,5,6,7,8,9};
+    int swapValue;
+    int randSquare[SQUARE_SIZE][SQUARE_SIZE] = {    
+        {0,0,0},
+        {0,0,0},
+        {0,0,0}
+    };
+
+    srand(time(NULL));
+    for(int i = 0; i < 9; i++) {
+        int randNum = (rand() % (i + 1));
+        swapValue = tempArray[i];
+        tempArray[i] = tempArray[randNum];
+        tempArray[randNum] = swapValue;
+    }
+    int k = 0;
+    for(int i = 0; i < SQUARE_SIZE; i++) {
+        for(int j = 0; j < SQUARE_SIZE; j++) {
+            randSquare[i][j] = tempArray[k];
+            printf("randSquare[%d][%d] %d\n", i, j, randSquare[i][j]);
+            k++;
+        }
+    }
+}
         
         //FUNCITON printSquare([][])
             //Print two things:
