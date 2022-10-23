@@ -3,23 +3,19 @@
 // git push -u origin main
 
 //LO SHU MAGIC SQUARE
-#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
 
 #define SQUARE_SIZE 3
-#define LO_SHU_NUMBER 15
 
 //PROTOTYPES
-static bool isLoshu(int square[][SQUARE_SIZE]);
-static int sumOfRows(int square[][SQUARE_SIZE]);
-static int sumOfCols(int square[][SQUARE_SIZE]);
-static int sumOfDiag1(int square[][SQUARE_SIZE]);
-static int sumOfDiag2(int square[][SQUARE_SIZE]);
-static void createRandomSquare(int (*squarePtr)[SQUARE_SIZE][SQUARE_SIZE]);
-// static void printSquare(int *square[SQUARE_SIZE][SQUARE_SIZE]); 
+int isLoshu(int square[SQUARE_SIZE][SQUARE_SIZE]);
+void printSquare(int square[SQUARE_SIZE][SQUARE_SIZE]);
+static void createRandomSquare(int square[][SQUARE_SIZE]);
+
+
 
 //MAIN
 int main() {
@@ -36,119 +32,99 @@ int main() {
         {4, 5, 6},
         (7, 8, 9)
     };
+
     //PASS ARRAYS INTO isLoShu([][]);
-    if(isLoshu(LoShuSquare)) {
+    if(isLoshu(LoShuSquare) == 1) {
         printf("Square #1 is a Lo-Shu Magic Square!\n\n");
     }
     else {
         printf("Square #1 is NOT a Lo-Shu Magic Square!\n\n");
     }
-    if(isLoshu(genericSquare)) {
+    printSquare(LoShuSquare);
+
+    if(isLoshu(genericSquare) == 1) {
         printf("Square #2 is a Lo-Shu Magic Square!\n\n");
     }
     else {
         printf("Square #2 is NOT a Lo-Shu Magic Square!\n\n");
     }
+    printSquare(genericSquare);
 
-    //createSquare()
-    int randSquare[SQUARE_SIZE][SQUARE_SIZE];
-    memset(randSquare, 0, sizeof(randSquare));
-    createRandomSquare(&randSquare);
+    
+    int found = 0;
+    int counter = 0;
+    while(!found) {
+        createRandomSquare(genericSquare);
+        counter++;
+        if(isLoshu(genericSquare) == 1) found = 1;
+    }
+
+    printf("Total number of attempts: %d\n", counter);
+    printSquare(genericSquare);
 
     return EXIT_SUCCESS;
 }
 
 //FUNCTIONS
-static int sumOfRows(int square[][SQUARE_SIZE]) {
-    int total;
-    for(int row = 0; row < SQUARE_SIZE; row++) {
-        total = 0;
-        for(int column = 0; column < SQUARE_SIZE; column++) {
-            total += square[row][column];            
-        }     
-    }
-    return total;
-}
-static int sumOfCols(int square[][SQUARE_SIZE]) {
-    //columns
-    int total;
-    for(int column = 0; column < SQUARE_SIZE; column++) {
-        total = 0;
-        for(int row = 0; row < SQUARE_SIZE; row++) { 
-            total += square[row][column];
-        }
-    }
-    return total;
-}
-static int sumOfDiag1(int square[][SQUARE_SIZE]) {
-    //DIAGONAL 1
-        // [x][][]   [0][0]
-        // [][x][]   [1][1]
-        // [][][x]   [2][2]
-    int total = 0;
+int isLoshu(int arr[SQUARE_SIZE][SQUARE_SIZE]) {
+    int magic = 1;
+    // iterate through columns
     for(int i = 0; i < SQUARE_SIZE; i++) {
-        total += square[i][i];
+        int isum = 0;
+        for (int j = 0; j < SQUARE_SIZE; j++) {
+            isum += arr[i][j];
+        }
+        if(isum != 15) magic = 0;
     }
-    return total;
-}
-static int sumOfDiag2(int square[][SQUARE_SIZE]) {
-    //DIAGONAL 2
-        // [][][x]   [0][2]
-        // [][x][]   [1][1]
-        // [x][][]   [2][0]    
-    int total = 0;
-    for(int row = 0, column = (SQUARE_SIZE - 1); row < SQUARE_SIZE; row++, column--) {
-         total += square[row][column];
+    // iterate through rows
+    for(int j = 0; j < SQUARE_SIZE; j++) {
+        int jsum = 0;
+        for (int i = 0; i < SQUARE_SIZE; i++) {
+            jsum += arr[i][j];
+        }
+        if(jsum != 15) magic = 0;
     }
-    return total;    
-}
-static bool isLoshu(int square[][SQUARE_SIZE]) {
-    if(sumOfRows(square)    ==      15      &&
-       sumOfCols(square)    ==      15      &&
-       sumOfDiag1(square)   ==      15      &&
-       sumOfDiag2(square)   ==      15
-       )
-       return true;
-    else
-        return false;
-
-
-    // return true ? sumRows == 15 && sumColumns == 15 && sumDiagonal_1 == 15 && sumDiagonal_2 == 15 : false;
-}
+    // iterate through diagonals
+    if(arr[0][0] + arr[1][1] + arr[2][2] != 15) magic = 0;
+    if(arr[2][0] + arr[1][1] + arr[0][2] != 15) magic = 0;
+    //return
+    return magic;
+} 
 
 //FUNCITON createSquare()
-static void createRandomSquare(int (*squarePtr)[SQUARE_SIZE][SQUARE_SIZE]) {
+static void createRandomSquare(int square[][SQUARE_SIZE]) {
 
     int tempArray[9] = {1,2,3,4,5,6,7,8,9};
-    int swapValue, counter = 0;
+    int swapValue;
 
     srand(time(NULL));
-    do
-    {   
-        //SHUFFLING VALUES OF TEMP ARRAY
-        for(int i = 0; i < 9; i++) {
-            int randNum = (rand() % (i + 1));
-            swapValue = tempArray[i];
-            tempArray[i] = tempArray[randNum];
-            tempArray[randNum] = swapValue;
+
+    //SHUFFLING VALUES OF TEMP ARRAY
+    for(int i = 8; i > 0; i--) {
+        int randNum = (rand() % (i + 1));
+        swapValue = tempArray[i];
+        tempArray[i] = tempArray[randNum];
+        tempArray[randNum] = swapValue;
+    }
+    //POPULATING SHUFFLED ARRAY INTO 2D
+    int k = 0;
+    for(int i = 0; i < SQUARE_SIZE; i++){
+        for(int j = 0; j < SQUARE_SIZE; j++) {
+            square[i][j] = tempArray[k++];
         }
-        //POPULATING SHUFFLED ARRAY INTO 2D
-        int k = 0;
-        for(int i = 0; i < SQUARE_SIZE; i++){
-            for(int j = 0; j < SQUARE_SIZE; j++) {
-                *squarePtr[i][j] = tempArray[k++];
-            }
-        }
-        counter++;
-    } while (!isLoshu(*squarePtr));
-    printf("Total number of attempts: %d\n", counter);
+    }
+}
+
+void printSquare(int square[SQUARE_SIZE][SQUARE_SIZE])
+{
     for(int i = 0; i < SQUARE_SIZE; i++) {
         for(int j = 0; j < SQUARE_SIZE; j++) {
             if(j == 0)
                 printf("[ ");
-            printf("%d ", *squarePtr[i][j]);            
+            printf("%d ", square[i][j]);            
         }
         printf("]\n");
     }
     printf("\n");
+
 }
