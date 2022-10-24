@@ -15,10 +15,10 @@ int isLoshu(int square[SQUARE_SIZE][SQUARE_SIZE]);
 void printSquare(int square[SQUARE_SIZE][SQUARE_SIZE]);
 static void createRandomSquare(int square[][SQUARE_SIZE]);
 
-
-
 //MAIN
 int main() {
+    srand(time(NULL));
+
     //CREATE TWO 2D ARRAYS
     //LO SHU SQUARE
     int LoShuSquare[][SQUARE_SIZE] = { 
@@ -36,31 +36,33 @@ int main() {
     //PASS ARRAYS INTO isLoShu([][]);
     if(isLoshu(LoShuSquare) == 1) {
         printf("Square #1 is a Lo-Shu Magic Square!\n\n");
-    }
-    else {
+    } else {
         printf("Square #1 is NOT a Lo-Shu Magic Square!\n\n");
     }
     printSquare(LoShuSquare);
 
     if(isLoshu(genericSquare) == 1) {
         printf("Square #2 is a Lo-Shu Magic Square!\n\n");
-    }
-    else {
+    } else {
         printf("Square #2 is NOT a Lo-Shu Magic Square!\n\n");
     }
     printSquare(genericSquare);
 
-    
-    int found = 0;
-    int counter = 0;
+    int randSquare[][SQUARE_SIZE] = {
+        {0,0,0},
+        {0,0,0},
+        {0,0,0}
+    };
+    int found = 0, counter = 0;
     while(!found) {
-        createRandomSquare(genericSquare);
+        createRandomSquare(randSquare);
         counter++;
-        if(isLoshu(genericSquare) == 1) found = 1;
+        // printf("Attempt #%d\n", counter);
+        if(isLoshu(randSquare) == 1) found = 1;
     }
 
     printf("Total number of attempts: %d\n", counter);
-    printSquare(genericSquare);
+    printSquare(randSquare);
 
     return EXIT_SUCCESS;
 }
@@ -91,13 +93,10 @@ int isLoshu(int arr[SQUARE_SIZE][SQUARE_SIZE]) {
     return magic;
 } 
 
-//FUNCITON createSquare()
 static void createRandomSquare(int square[][SQUARE_SIZE]) {
 
     int tempArray[9] = {1,2,3,4,5,6,7,8,9};
     int swapValue;
-
-    srand(time(NULL));
 
     //SHUFFLING VALUES OF TEMP ARRAY
     for(int i = 8; i > 0; i--) {
@@ -110,7 +109,8 @@ static void createRandomSquare(int square[][SQUARE_SIZE]) {
     int k = 0;
     for(int i = 0; i < SQUARE_SIZE; i++){
         for(int j = 0; j < SQUARE_SIZE; j++) {
-            square[i][j] = tempArray[k++];
+            square[i][j] = tempArray[k];
+            k++;
         }
     }
 }
@@ -126,5 +126,4 @@ void printSquare(int square[SQUARE_SIZE][SQUARE_SIZE])
         printf("]\n");
     }
     printf("\n");
-
 }
